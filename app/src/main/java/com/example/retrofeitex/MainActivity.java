@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.retrofeitex.Services.GetCountryDataService;
@@ -26,10 +27,14 @@ public class MainActivity extends AppCompatActivity {
     CountryAdapter countryAdapter;
 
     ArrayList<ResultModel> resultList;
+
+    String states;
+    TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        textView =findViewById(R.id.text);
 
         GetCountries();
 
@@ -43,15 +48,38 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<CountryModel> call, Response<CountryModel> response) {
                 CountryModel countryModel = response.body();
+                if (countryModel != null && countryModel.getResultmodel() != null) {
+                    resultList = new ArrayList<>(); // Initialize if needed
 
-                if ((countryModel != null) && (countryModel.getResultmodel()!= null)){
-                    resultList = (ArrayList<ResultModel>) countryModel.getResultmodel();
+                    for (ResultModel country : countryModel.getResultmodel()) {
+                        Object statesData = country.getStates();
+                        ArrayList<String> statesList = new ArrayList<>();
 
+                        if (statesData instanceof ArrayList<?>) {
+                            statesList = (ArrayList<String>) statesData;
+                        } else if (statesData instanceof String) {
+                            statesList.add((String) statesData);
+                        } else {
+                            statesList.add("No states available");
+                        }
 
+                        country.setStates(statesList);
+                        resultList.add(country);
+                    }
 
                 }
+
                 ViewData();
             }
+
+//                if ((countryModel != null) && (countryModel.getResultmodel()!= null)){
+//                    resultList = (ArrayList<ResultModel>) countryModel.getResultmodel();
+//
+//
+//
+//                }
+//                ViewData();
+//            }
 
             @Override
             public void onFailure(Call<CountryModel> call, Throwable t) {

@@ -1,5 +1,6 @@
 package com.example.retrofeitex.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,21 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHold
         holder.textView.setText(resultModel.getCode());
         holder.textView1.setText(resultModel.getName());
         holder.textView2.setText(resultModel.getRegion());
-     // holder.textView3.setText(resultModel.getStates().toString());
+
+        Object statesData = resultList.get(position).getStates();
+        String textToShow = "";
+
+        if (statesData instanceof ArrayList<?>) {
+            ArrayList<String> statesList = (ArrayList<String>) statesData;
+            textToShow = !statesList.isEmpty() ? TextUtils.join(", ", statesList) : "No states available";
+        } else if (statesData instanceof String) {
+            textToShow = (String) statesData;
+        } else {
+            textToShow = "States data format not supported";
+        }
+
+        holder.textView3.setText(textToShow);
+
     }
 
     @Override
@@ -58,7 +73,7 @@ public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.ViewHold
             textView= itemView.findViewById(R.id.textView);
             textView1= itemView.findViewById(R.id.textview1);
             textView2=itemView.findViewById(R.id.textview2);
-        //    textView3=itemView.findViewById(R.id.states);
+            textView3=itemView.findViewById(R.id.state);
 
         }
     }
